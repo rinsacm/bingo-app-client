@@ -192,9 +192,11 @@ const BingoSquares = () => {
     }
   }, [bingoStr]);
   useEffect(() => {
-    if (players.length == 0) {
+    if (players.length >= 0) {
       getAllPlayers();
     }
+  });
+  useEffect(() => {
     if (numbersArr[0] != 0) {
       socket.on("playednum", (data) => {
         console.log("play play");
@@ -214,7 +216,7 @@ const BingoSquares = () => {
   };
 
   const getAllPlayers = async () => {
-    fetch("http://localhost:3001/allplayers")
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/allplayers`)
       .then((res) => res.json())
       .then(async (data) => {
         await setPlayers(data);
@@ -248,7 +250,7 @@ const BingoSquares = () => {
       </div>
 
       {!loading && (
-        <div className="grid grid-cols-5 my-4 justify-items-center">
+        <div className="flex justify-around flex-wrap gap-2 my-4 justify-items-center">
           <div className="flex-col col-span-2">
             {arr.map((_, i) => {
               return (
