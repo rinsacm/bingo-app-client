@@ -99,6 +99,8 @@ const BingoSquares = () => {
     for (let i = 0; i < 5; i++) {
       if (colCountArr[i] == 5) addLetterToBINGOStr();
     }
+    console.log("diag1COunt:  " + diag1Count);
+    console.log("diag2COunt:  " + diag2Count);
     if (diag1Count == 5) addLetterToBINGOStr();
     if (diag2Count == 5) addLetterToBINGOStr();
     console.log("----------------------------");
