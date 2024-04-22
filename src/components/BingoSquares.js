@@ -104,7 +104,7 @@ const BingoSquares = () => {
     if (diag1Count == 5) addLetterToBINGOStr();
     if (diag2Count == 5) addLetterToBINGOStr();
     console.log("----------------------------");
-  }, [rowCountArr, colCountArr]);
+  }, [rowCountArr, colCountArr, diag1Count, diag2Count]);
 
   //   setRowCountArr([9, 9]);
   const findIndexesOfNum = (num) => {
