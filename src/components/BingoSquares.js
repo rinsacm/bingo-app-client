@@ -21,6 +21,8 @@ const BingoSquares = () => {
   const [players, setPlayers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+  const [diag1Count, setDiag1Count] = useState(0);
+  const [diag2Count, setDiag2Count] = useState(0);
 
   const socket = useContext(SocketContext);
   const addLetterToBINGOStr = () => {
@@ -147,6 +149,9 @@ const BingoSquares = () => {
       temp[colInd] = temp[colInd] + 1;
       return temp;
     });
+    if (rowInd == colInd) setDiag1Count((count) => count + 1);
+    else if (rowInd + colInd == 4);
+    setDiag2Count((count) => count + 1);
 
     console.log("---------------");
   };
