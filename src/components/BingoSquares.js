@@ -154,8 +154,7 @@ const BingoSquares = () => {
       return temp;
     });
     if (rowInd == colInd) setDiag1Count((count) => count + 1);
-    if (rowInd + colInd == 4);
-    setDiag2Count((count) => count + 1);
+    if (rowInd + colInd == 4) setDiag2Count((count) => count + 1);
 
     console.log("---------------");
   };
