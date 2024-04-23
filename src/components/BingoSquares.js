@@ -24,6 +24,14 @@ const BingoSquares = () => {
   const [diag1Count, setDiag1Count] = useState(0);
   const [diag2Count, setDiag2Count] = useState(0);
   const [isBINGOEnabled, setIsBINGOEnabled] = useState(false);
+  const [name, setName] = useState("");
+  const [room, setRoom] = useState("");
+  const [isStartEnabled, setIsStartEnabled] = useState(false);
+  const [socketid, setSocketid] = useState(null);
+  const [winner, setWinner] = useState(null);
+  const [isBINGOClicked, setIsBINGOClicked] = useState(false);
+  const [haveNewPlayer, setHaveNewPlayer] = useState(0);
+  const [leftOnePlayer, setLeftOnePlayer] = useState(0);
 
   const socket = useContext(SocketContext);
   const addLetterToBINGOStr = () => {
@@ -87,6 +95,13 @@ const BingoSquares = () => {
       }
     }
     setNumbersArr(tempArr);
+  };
+
+  const joinRoom = (name, room) => {
+    setIsStartEnabled(true);
+
+    console.log("joining room", room, name);
+    socket.emit("join", name, room);
   };
   useEffect(() => {
     console.log("----------rowCountArr useEffect executing----------");
@@ -162,13 +177,13 @@ const BingoSquares = () => {
   const won = (name) => {
     console.log("-----------won function----------");
     console.log("you won");
-    socket.emit("won", name);
+    socket.emit("won", socketid, room);
     console.log("------------------");
+    setIsBINGOClicked(true);
     setShowModal(true);
   };
   useEffect(() => {
     setLoading(true);
-    socket.emit("join", "user");
 
     console.log("numbersArr initially = " + numbersArr);
     makeArrayRandom();
@@ -177,8 +192,11 @@ const BingoSquares = () => {
     console.log("numbersArr initially = " + numbersArr);
     // getAllPlayers();
     setLoading(false);
-
+    socket.on("getmysocketDetail", (socketid) => {
+      setSocketid(socketid);
+    });
     socket.on("play", () => {
+      console.log("It is your turn");
       setIsMyTurn(true);
     });
     socket.on("restart", () => {
@@ -187,10 +205,17 @@ const BingoSquares = () => {
     socket.on("started", () => {
       setIsStarted(true);
     });
-    socket.on("lost", (winner) => {
+    socket.on("new_player", () => {
+      setHaveNewPlayer((val) => val + 1);
+    });
+    socket.on("leave", () => {
+      setLeftOnePlayer((val) => val + 1);
+    });
+    socket.on("lost", (winnerid) => {
       console.log(
-        "----------------lost ------\n" + winner + " won\n----------------"
+        "----------------lost ------\n" + winnerid + " won\n----------------"
       );
+      setWinner(winnerid);
       setShowModal(true);
     });
   }, []);
@@ -202,11 +227,12 @@ const BingoSquares = () => {
       // setShowModal(true);
     }
   }, [bingoStr]);
+  useEffect(() => {});
   useEffect(() => {
     if (players.length >= 0) {
       getAllPlayers();
     }
-  });
+  }, [haveNewPlayer, isStartEnabled]);
   useEffect(() => {
     if (numbersArr[0] != 0) {
       socket.on("playednum", (data) => {
@@ -219,17 +245,18 @@ const BingoSquares = () => {
     }
   }, [numbersArr]);
   const startGame = () => {
-    socket.emit("start_game");
+    socket.emit("start_game", room);
     setIsStarted(true);
   };
   const restartGame = () => {
-    socket.emit("restart");
+    socket.emit("restart", room);
   };
 
   const getAllPlayers = async () => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/allplayers`)
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/allplayers?roomName=${room}`)
       .then((res) => res.json())
       .then(async (data) => {
+        console.log(room);
         await setPlayers(data);
         console.log(data);
       });
@@ -251,7 +278,7 @@ const BingoSquares = () => {
               x
             </div>
             <div className="flex justify-center items-center">
-              You {bingoStr == "BINGO" ? "Won!!!" : "Lost :("}
+              You {isBINGOClicked ? "Won!!!" : "Lost :("}
             </div>
           </div>
         </div>
@@ -275,6 +302,8 @@ const BingoSquares = () => {
                     isClicked={false}
                     isMyTurn={isMyTurn}
                     setIsMyTurn={setIsMyTurn}
+                    room={room}
+                    socketid={socketid}
                   />
                 </div>
               );
@@ -305,6 +334,51 @@ const BingoSquares = () => {
           </div>
         </div>
       )}
+
+      <div className="text-center text-black-600 flex justify-center w-full text-lg my-2">
+        <div>
+          <div className="grid grid-cols-2 grid-rows-2 gap-2">
+            <label>Name: </label>
+            {!isStartEnabled ? (
+              <input
+                type="text"
+                name="name"
+                value={name}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setName(e.target.value);
+                }}
+                className="g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              />
+            ) : (
+              <div>{name}</div>
+            )}
+            <label>Room:</label>
+            {!isStartEnabled ? (
+              <input
+                type="text"
+                name="room"
+                value={room}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setRoom(e.target.value);
+                }}
+                className="g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              />
+            ) : (
+              <div>{room}</div>
+            )}
+          </div>
+          {!isStartEnabled && (
+            <button
+              className="bg-orange-500 my-2 text-white w-auto h-min p-2 rounded-sm font-kanit font-normal self-center hover:bg-orange-300 col-span-1"
+              onClick={() => joinRoom(name, room)}
+            >
+              Join room
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
         You are now <div className="text-red-700 mx-2">{bingoStr}</div>

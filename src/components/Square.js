@@ -8,6 +8,8 @@ const Square = ({
   isClicked,
   isMyTurn,
   setIsMyTurn,
+  room,
+  socketid,
 }) => {
   const [isSquareClicked, setIsSquareClicked] = useState(isClicked);
   const [isJoined, setIsClicked] = useState(false);
@@ -23,9 +25,10 @@ const Square = ({
         setIsSquareClicked(true);
         console.log("other player clicked " + num);
       }
-      if (data["me"] == true) setIsMyTurn(false);
+      if (data["socketid"] == socketid) setIsMyTurn(false);
     });
     socket.on("play", () => {
+      console.log("play");
       setIsMyTurn(true);
     });
   }, []);
@@ -36,7 +39,7 @@ const Square = ({
       setIsClicked(true);
       // console.log(refArr);
       setIsSquareClicked(true);
-      socket.emit("played", val);
+      socket.emit("played", val, room, socketid);
     }
   };
   return (
