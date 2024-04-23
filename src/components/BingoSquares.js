@@ -204,12 +204,15 @@ const BingoSquares = () => {
     });
     socket.on("started", () => {
       setIsStarted(true);
+      getAllPlayers();
     });
     socket.on("new_player", () => {
       setHaveNewPlayer((val) => val + 1);
+      getAllPlayers();
     });
     socket.on("leave", () => {
       setLeftOnePlayer((val) => val + 1);
+      getAllPlayers();
     });
     socket.on("lost", (winnerid) => {
       console.log(
@@ -232,7 +235,7 @@ const BingoSquares = () => {
     if (players.length >= 0) {
       getAllPlayers();
     }
-  });
+  }, [haveNewPlayer, isStartEnabled]);
   useEffect(() => {
     if (numbersArr[0] != 0) {
       socket.on("playednum", (data) => {
