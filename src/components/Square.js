@@ -23,9 +23,10 @@ const Square = ({
 
       if (num == numbersArr[rowInd * 5 + colInd]) {
         setIsSquareClicked(true);
-        setIsMyTurn(false);
         console.log("other player clicked " + num);
+        setIsMyTurn(false);
       }
+      if (data["socketid"] == socketid) setIsMyTurn(false);
     });
     socket.on("play", () => {
       console.log("play");
