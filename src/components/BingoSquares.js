@@ -232,7 +232,7 @@ const BingoSquares = () => {
     if (players.length >= 0) {
       getAllPlayers();
     }
-  }, [haveNewPlayer, isStartEnabled]);
+  });
   useEffect(() => {
     if (numbersArr[0] != 0) {
       socket.on("playednum", (data) => {
