@@ -23,6 +23,7 @@ const BingoSquares = () => {
   const [isStarted, setIsStarted] = useState(false);
   const [diag1Count, setDiag1Count] = useState(0);
   const [diag2Count, setDiag2Count] = useState(0);
+  const [isBINGOEnabled, setIsBINGOEnabled] = useState(false);
 
   const socket = useContext(SocketContext);
   const addLetterToBINGOStr = () => {
@@ -163,6 +164,7 @@ const BingoSquares = () => {
     console.log("you won");
     socket.emit("won", name);
     console.log("------------------");
+    setShowModal(true);
   };
   useEffect(() => {
     setLoading(true);
@@ -195,8 +197,9 @@ const BingoSquares = () => {
 
   useEffect(() => {
     if (bingoStr == "BINGO") {
-      won("rin");
-      setShowModal(true);
+      setIsBINGOEnabled(true);
+      // won("rin");
+      // setShowModal(true);
     }
   }, [bingoStr]);
   useEffect(() => {
@@ -305,6 +308,16 @@ const BingoSquares = () => {
 
       <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
         You are now <div className="text-red-700 mx-2">{bingoStr}</div>
+      </div>
+      <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
+        {isBINGOEnabled && (
+          <button
+            className="bg-orange-500 text-white w-auto h-min p-2 rounded-sm font-kanit font-normal self-center hover:bg-orange-300 col-span-1"
+            onClick={() => won("rin")}
+          >
+            I got BINGO :)
+          </button>
+        )}
       </div>
       <div>{/* {rowCountArr}-{colCountArr} */}</div>
     </div>
