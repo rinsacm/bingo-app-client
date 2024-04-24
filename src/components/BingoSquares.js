@@ -218,7 +218,7 @@ const BingoSquares = () => {
       console.log(
         "----------------lost ------\n" + winnerData + " won\n----------------"
       );
-      if (!winner) setWinner(winnerData);
+      if (winner == null) setWinner(winnerData);
       setShowModal(true);
     });
   }, []);
@@ -273,7 +273,7 @@ const BingoSquares = () => {
 
       {showModal && (
         <div className="w-dvw h-svh fixed bg-opacity-30  bg-black flex justify-center items-center">
-          <div className="w-48 h-20 bg-white rounded-sm text-blue-950 font-kanit p-2">
+          <div className="w-48 h-40 bg-white rounded-sm text-blue-950 font-kanit p-2">
             <div
               className="font-bold text-end"
               onClick={() => setShowModal(false)}
@@ -282,13 +282,15 @@ const BingoSquares = () => {
             </div>
             <div className="flex justify-center items-center">
               You{" "}
-              {isBINGOClicked && winner.socketid == socketid
+              {isBINGOClicked && winner != null && winner.socketid == socketid
                 ? "Won!!!"
                 : "Lost :("}
             </div>
-            <div className="flex justify-center items-center">
-              {winner.socketid != socketid && winner.name + " Won"}
-            </div>
+            {winner != null && winner.socketid != socketid && (
+              <div className="flex justify-center items-center">
+                {winner.socketid + " Won"}
+              </div>
+            )}
           </div>
         </div>
       )}
