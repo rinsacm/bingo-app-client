@@ -338,7 +338,7 @@ const BingoSquares = () => {
         </div>
       )}
 
-      <div className="text-center text-black-600 flex justify-center w-full text-lg my-2">
+      <div className="text-center text-black-600 flex justify-center w-screen text-lg my-2">
         <div>
           <div className="grid grid-cols-2 grid-rows-2 gap-2">
             <label>Name: </label>
