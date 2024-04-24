@@ -286,7 +286,7 @@ const BingoSquares = () => {
           </div>
         </div>
       )}
-      <div className="text-center my-4 text-red-500 font-thin font-kanit text-xl">
+      <div className="text-center my-2 text-red-500 font-thin font-kanit text-xl">
         {isMyTurn ? "Your Turn" : ""}
       </div>
 
