@@ -177,7 +177,7 @@ const BingoSquares = () => {
   const won = (name) => {
     console.log("-----------won function----------");
     console.log("you won");
-    socket.emit("won", socketid, room);
+    socket.emit("won", { name: name, socketid: socketid }, room);
     console.log("------------------");
     setIsBINGOClicked(true);
     setShowModal(true);
@@ -214,11 +214,11 @@ const BingoSquares = () => {
       setLeftOnePlayer((val) => val + 1);
       getAllPlayers();
     });
-    socket.on("lost", (winnerid) => {
+    socket.on("lost", (winnerData) => {
       console.log(
-        "----------------lost ------\n" + winnerid + " won\n----------------"
+        "----------------lost ------\n" + winnerData + " won\n----------------"
       );
-      setWinner(winnerid);
+      if (!winner) setWinner(winnerData);
       setShowModal(true);
     });
   }, []);
@@ -281,7 +281,13 @@ const BingoSquares = () => {
               x
             </div>
             <div className="flex justify-center items-center">
-              You {isBINGOClicked ? "Won!!!" : "Lost :("}
+              You{" "}
+              {isBINGOClicked && winner.socketid == socketid
+                ? "Won!!!"
+                : "Lost :("}
+            </div>
+            <div className="flex justify-center items-center">
+              {winner.socketid != socketid && winner.name + " Won"}
             </div>
           </div>
         </div>
@@ -393,7 +399,7 @@ const BingoSquares = () => {
         {isBINGOEnabled && (
           <button
             className="bg-orange-500 text-white w-auto h-min p-2 rounded-sm font-kanit font-normal self-center hover:bg-orange-300 col-span-1"
-            onClick={() => won("rin")}
+            onClick={() => won(name)}
           >
             I got BINGO :)
           </button>
