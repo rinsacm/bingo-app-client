@@ -352,7 +352,7 @@ const BingoSquares = () => {
       >
         <div>
           <div className="grid grid-cols-3 grid-rows-2 gap-2">
-            <label>Name: </label>
+            <label className="col-span-1">Name: </label>
             {!isStartEnabled ? (
               <input
                 type="text"
@@ -365,9 +365,9 @@ const BingoSquares = () => {
                 className=" col-span-2 g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             ) : (
-              <div>{name}</div>
+              <div className="col-span-2 text-base">{name}</div>
             )}
-            <label>Room:</label>
+            <label className="col-span-1 text-base">Room:</label>
             {!isStartEnabled ? (
               <input
                 type="text"
@@ -377,15 +377,15 @@ const BingoSquares = () => {
                   e.preventDefault();
                   setRoom(e.target.value);
                 }}
-                className=" col-span-2 g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className=" col-span-2 g-gray-50 text-base border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             ) : (
-              <div>{room}</div>
+              <div className="col-span-2 text-base">{room}</div>
             )}
           </div>
           {!isStartEnabled && (
             <button
-              className="bg-orange-500 my-2 text-white w-auto h-min p-2 rounded-sm font-kanit font-normal self-center hover:bg-orange-300 col-span-1"
+              className=" text-base bg-orange-500 my-2 text-white w-auto h-min p-2 rounded-sm font-kanit font-normal self-center hover:bg-orange-300 col-span-1"
               onClick={() => joinRoom(name, room)}
             >
               Join room
@@ -394,9 +394,11 @@ const BingoSquares = () => {
         </div>
       </div>
 
-      <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
-        You are now <div className="text-red-700 mx-2">{bingoStr}</div>
-      </div>
+      {bingoStr != "" && (
+        <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
+          You are now <div className="text-red-700 mx-2">{bingoStr}</div>
+        </div>
+      )}
       <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
         {isBINGOEnabled && (
           <button
