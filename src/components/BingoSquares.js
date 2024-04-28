@@ -204,15 +204,15 @@ const BingoSquares = () => {
     });
     socket.on("started", () => {
       setIsStarted(true);
-      getAllPlayers();
+      // getAllPlayers();
     });
     socket.on("new_player", () => {
       setHaveNewPlayer((val) => val + 1);
-      getAllPlayers();
+      // getAllPlayers();
     });
     socket.on("leave", () => {
       setLeftOnePlayer((val) => val + 1);
-      getAllPlayers();
+      // getAllPlayers();
     });
     socket.on("lost", (winnerData) => {
       console.log(
@@ -235,7 +235,7 @@ const BingoSquares = () => {
     if (players.length >= 0) {
       getAllPlayers();
     }
-  }, [haveNewPlayer, isStartEnabled]);
+  }, [haveNewPlayer, isStartEnabled, leftOnePlayer]);
   useEffect(() => {
     if (numbersArr[0] != 0) {
       socket.on("playednum", (data) => {
@@ -288,7 +288,7 @@ const BingoSquares = () => {
             </div>
             {winner != null && winner.socketid != socketid && (
               <div className="flex justify-center items-center">
-                {winner.socketid + " Won"}
+                {winner.name + " Won"}
               </div>
             )}
           </div>
