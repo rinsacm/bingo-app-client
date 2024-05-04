@@ -275,6 +275,7 @@ const BingoSquares = () => {
       });
   };
   const onClickCustom = () => {
+    setCustomOrderIndex(0);
     setNumbersArr(Array(25).fill(0));
     setOrrderedNumbers(orderedArr);
     setNumbersOrder("custom");
