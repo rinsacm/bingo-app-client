@@ -32,6 +32,12 @@ const BingoSquares = () => {
   const [isBINGOClicked, setIsBINGOClicked] = useState(false);
   const [haveNewPlayer, setHaveNewPlayer] = useState(0);
   const [leftOnePlayer, setLeftOnePlayer] = useState(0);
+  const [customOrderIndex, setCustomOrderIndex] = useState(0);
+  const [orderedNumbers, setOrrderedNumbers] = useState(null);
+  const [numbersOrder, setNumbersOrder] = useState("random");
+  let orderedArr = Array(25)
+    .fill(0)
+    .map((_, i) => i + 1);
 
   const socket = useContext(SocketContext);
   const addLetterToBINGOStr = () => {
@@ -72,6 +78,7 @@ const BingoSquares = () => {
   //     console.log(elRefs);
   //   };
   const makeArrayRandom = () => {
+    setNumbersOrder("random");
     let orderedArr = Array(25)
       .fill(0)
       .map((_, i) => i + 1);
@@ -264,6 +271,20 @@ const BingoSquares = () => {
         console.log(data);
       });
   };
+  const onClickCustom = () => {
+    setNumbersArr(Array(25).fill(0));
+    setOrrderedNumbers(orderedArr);
+    setNumbersOrder("custom");
+  };
+  const onClickNumberTile = (num) => {
+    let tempArr = [...numbersArr];
+    tempArr[customOrderIndex] = num;
+    setCustomOrderIndex(customOrderIndex + 1);
+    setNumbersArr(tempArr);
+    let tempArr2 = [...orderedNumbers];
+    tempArr2 = tempArr2.filter((ele) => ele != num);
+    setOrrderedNumbers(tempArr2);
+  };
   return (
     // <ClickedRowCountContext.Provider value={{ rowCountArr, setRowCountArr }}>
     <div className=" w-screen flex justify-items-center flex-col">
@@ -301,24 +322,61 @@ const BingoSquares = () => {
       {!loading && (
         <div className="flex justify-around flex-wrap gap-2 my-4 justify-items-center">
           <div className="flex-col col-span-2">
-            {arr.map((_, i) => {
-              return (
-                <div
-                  className="  border-solid border border-black flex flex-row max-w-min"
-                  style={{ backgroundColor: "white" }}
-                >
-                  <BingoRow
-                    rowInd={i}
-                    numbersArr={numbersArr}
-                    isClicked={false}
-                    isMyTurn={isMyTurn}
-                    setIsMyTurn={setIsMyTurn}
-                    room={room}
-                    socketid={socketid}
-                  />
-                </div>
-              );
-            })}
+            <div>
+              {arr.map((_, i) => {
+                return (
+                  <div
+                    className="  border-solid border border-black flex flex-row max-w-min"
+                    style={{ backgroundColor: "white" }}
+                  >
+                    <BingoRow
+                      rowInd={i}
+                      numbersArr={numbersArr}
+                      isClicked={false}
+                      isMyTurn={isMyTurn}
+                      setIsMyTurn={setIsMyTurn}
+                      room={room}
+                      socketid={socketid}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <button
+              className="
+              bg-orange-500
+              text-white
+            my-2
+              h-min
+              p-2
+              rounded-sm
+              font-kanit
+              font-normal
+              self-center
+              hover:bg-orange-300
+              col-span-1"
+              onClick={
+                numbersOrder == "random" ? onClickCustom : makeArrayRandom
+              }
+            >
+              {numbersOrder == "random"
+                ? "Use Custom Numbers"
+                : "Use random Numbers"}
+            </button>
+            <div className="flex flex-row flex-wrap flex-shrink col-span-2 max-w-60">
+              {orderedNumbers != null &&
+                numbersOrder == "custom" &&
+                orderedNumbers.map((ele, ind) => {
+                  return (
+                    <div
+                      className="p-2 border-orange-300 border-solid border w-10  mx-1"
+                      onClick={() => onClickNumberTile(ele)}
+                    >
+                      {ele}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
           {!isStarted ? (
             <button
