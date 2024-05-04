@@ -10,28 +10,42 @@ const Square = ({
   setIsMyTurn,
   room,
   socketid,
+  isStarted,
 }) => {
   const [isSquareClicked, setIsSquareClicked] = useState(isClicked);
   const [isJoined, setIsClicked] = useState(false);
+  const [latestNumbers, setLatestNumbers] = useState(null);
   //   const [isMyTurn, setIsMyTurn] = useState(false);
 
   const socket = useContext(SocketContext);
-
+  // useEffect(() => {
+  //   console.log(numbersArr);
+  // }, [numbersArr]);
   useEffect(() => {
-    socket.on("playednum", (data) => {
-      let num = data["num"];
+    if (isStarted == true) {
+      socket.on("playednum", (data) => {
+        onPlayed(data);
+      });
+      socket.on("play", () => {
+        console.log("play");
+        setIsMyTurn(true);
+      });
+    }
+  }, [isStarted]);
 
-      if (num == numbersArr[rowInd * 5 + colInd]) {
-        setIsSquareClicked(true);
-        console.log("other player clicked " + num);
-      }
-      if (data["socketid"] == socketid) setIsMyTurn(false);
-    });
-    socket.on("play", () => {
-      console.log("play");
-      setIsMyTurn(true);
-    });
-  }, []);
+  const onPlayed = (data) => {
+    console.log(numbersArr);
+    let num = data["num"];
+
+    if (
+      num == numbersArr[rowInd * 5 + colInd] &&
+      data["socketid"] != socketid
+    ) {
+      setIsSquareClicked(true);
+      console.log("other player clicked " + num);
+    }
+    if (data["socketid"] == socketid) setIsMyTurn(false);
+  };
 
   const onClickSquare = (val, rowInd, colInd) => {
     // refArr[rowInd][colInd].current.style.backgroundColor = "red";
@@ -40,6 +54,7 @@ const Square = ({
       // console.log(refArr);
       setIsSquareClicked(true);
       setIsMyTurn(false);
+      console.log(val);
       socket.emit("played", val, room, socketid);
     }
   };

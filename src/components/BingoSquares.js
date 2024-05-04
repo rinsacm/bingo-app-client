@@ -187,7 +187,6 @@ const BingoSquares = () => {
     socket.emit("won", { name: name, socketid: socketid }, room);
     console.log("------------------");
     setIsBINGOClicked(true);
-    setShowModal(true);
   };
   useEffect(() => {
     setLoading(true);
@@ -226,9 +225,13 @@ const BingoSquares = () => {
         "----------------lost ------\n" + winnerData + " won\n----------------"
       );
       if (winner == null) setWinner(winnerData);
-      setShowModal(true);
     });
   }, []);
+  useEffect(() => {
+    if (winner != null) {
+      setShowModal(true);
+    }
+  }, [winner]);
 
   useEffect(() => {
     if (bingoStr == "BINGO") {
@@ -253,7 +256,7 @@ const BingoSquares = () => {
         //   checkBINGO(rowCountArr, data);
       });
     }
-  }, [numbersArr]);
+  }, [isStarted]);
   const startGame = () => {
     socket.emit("start_game", room);
     setIsStarted(true);
@@ -284,6 +287,7 @@ const BingoSquares = () => {
     let tempArr2 = [...orderedNumbers];
     tempArr2 = tempArr2.filter((ele) => ele != num);
     setOrrderedNumbers(tempArr2);
+    console.log(numbersArr);
   };
   return (
     // <ClickedRowCountContext.Provider value={{ rowCountArr, setRowCountArr }}>
@@ -337,6 +341,7 @@ const BingoSquares = () => {
                       setIsMyTurn={setIsMyTurn}
                       room={room}
                       socketid={socketid}
+                      isStarted={isStarted}
                     />
                   </div>
                 );
