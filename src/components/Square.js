@@ -23,15 +23,31 @@ const Square = ({
   // }, [numbersArr]);
   useEffect(() => {
     if (isStarted == true) {
-      socket.on("playednum", (data) => {
-        onPlayed(data);
-      });
+      socket.on("playednum", onPlayed);
       socket.on("play", () => {
         console.log("play");
         setIsMyTurn(true);
       });
+      socket.on("restartclicked", () => {
+        setIsSquareClicked(false);
+        setIsMyTurn(false);
+      });
+      socket.on("datareset", () => {
+        setIsSquareClicked(false);
+        setIsMyTurn(false);
+      });
     }
-  }, [isStarted]);
+    return () => {
+      socket.off("playednum", onPlayed);
+    };
+  }, [isStarted, numbersArr]);
+  // useEffect(() => {
+  //   if (isStarted == true) {
+  //     socket.on("playednum", (data) => {
+  //       onPlayed(data);
+  //     });
+  //   }
+  // }, [numbersArr]);
 
   const onPlayed = (data) => {
     console.log(numbersArr);

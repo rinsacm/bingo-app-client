@@ -1,14 +1,9 @@
-import React, { createRef, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import BingoRow from "./BingoRow";
 import "../App.css";
 import { SocketContext } from "../contexts/SocketContext";
 
-// const socket = io.connect("http://localhost:3001");
-
 const BingoSquares = () => {
-  const [elRefs, setElRefs] = React.useState(
-    Array(5).fill(Array(5).fill(null))
-  );
   const [bingoStr, setBingoStr] = useState("");
 
   const [numbersArr, setNumbersArr] = useState(Array(25).fill(0));
@@ -33,13 +28,16 @@ const BingoSquares = () => {
   const [haveNewPlayer, setHaveNewPlayer] = useState(0);
   const [leftOnePlayer, setLeftOnePlayer] = useState(0);
   const [customOrderIndex, setCustomOrderIndex] = useState(0);
-  const [orderedNumbers, setOrrderedNumbers] = useState(null);
+  const [orderedNumbers, setOrderedNumbers] = useState(null);
   const [numbersOrder, setNumbersOrder] = useState("random");
+  const [restart, setRestart] = useState(false);
+  //creating array of numbers from 1 to 25
   let orderedArr = Array(25)
     .fill(0)
     .map((_, i) => i + 1);
 
   const socket = useContext(SocketContext);
+  //addsLetter to bingo string based on the count on row ,column,diagonal count array
   const addLetterToBINGOStr = () => {
     setBingoStr((prev) => {
       let tempStr = prev;
@@ -57,26 +55,25 @@ const BingoSquares = () => {
       return tempStr;
     });
   };
+  useEffect(() => {}, [numbersArr]);
+
   useEffect(() => {
     console.log(numbersArr);
+    setRowCountArr(Array(5).fill(0));
+    setColCountArr(Array(5).fill(0));
+    setDiag1Count(0);
+    setDiag2Count(0);
+    if (isStarted) startGame();
   }, [numbersArr, loading]);
   useEffect(() => {
     console.log(loading);
   }, [loading]);
-  //   const createRefArray = () => {
-  //     let tempArr = [];
 
-  //     for (let i = 0; i < 5; i++) {
-  //       tempArr = [];
-  //       for (let j = 0; j < 5; j++) {
-  //         tempArr.push(createRef());
-  //       }
-  //       setElRefs([...elRefs, tempArr]);
-  //     }
-
-  //     console.log("Reference array is  ");
-  //     console.log(elRefs);
-  //   };
+  /*  
+    1.sets the numbersOrder to random
+    2.creating array of numbers from 1 to 25
+  
+  */
   const makeArrayRandom = () => {
     setNumbersOrder("random");
     let orderedArr = Array(25)
@@ -110,6 +107,7 @@ const BingoSquares = () => {
     console.log("joining room", room, name);
     socket.emit("join", name, room);
   };
+
   useEffect(() => {
     console.log("----------rowCountArr useEffect executing----------");
     console.log(rowCountArr);
@@ -129,26 +127,22 @@ const BingoSquares = () => {
     console.log("----------------------------");
   }, [rowCountArr, colCountArr, diag1Count, diag2Count]);
 
-  //   setRowCountArr([9, 9]);
   const findIndexesOfNum = (num) => {
     console.log("-----------findIndexOfNum function called---------------");
-    console.log(num);
-    console.log(numbersArr);
+    console.log("Number to find index : " + num);
+    console.log("numbersArr : " + numbersArr);
     let ind = numbersArr.findIndex((ele) => ele == num);
-    console.log(ind);
-    // let rowInd =
-    //   (ind + 1) % 5 == 0
-    //     ? Math.floor((ind + 1) / 5) - 1
-    //     : Math.floor((ind + 1) / 5);
-    // let colInd = (ind + 1) % 5 == 0 ? 4 : (ind + 1) % 5;
+    console.log("index is : " + ind);
+
     let rowInd =
       (ind + 1) % 5 == 0
         ? Math.floor((ind + 1) / 5) - 1
         : Math.floor((ind + 1) / 5);
     let colInd = (ind + 1) % 5 == 0 ? 4 : ind % 5;
-    console.log(rowInd, colInd);
-    return { rowInd, colInd };
+    console.log("rowind,colind : ", rowInd, colInd);
+
     console.log("--------------------------");
+    return { rowInd, colInd };
   };
 
   const checkBINGO = (data) => {
@@ -194,23 +188,33 @@ const BingoSquares = () => {
     console.log("numbersArr initially = " + numbersArr);
     makeArrayRandom();
 
-    // createRefArray();
     console.log("numbersArr initially = " + numbersArr);
-    // getAllPlayers();
+
     setLoading(false);
     socket.on("getmysocketDetail", (socketid) => {
       setSocketid(socketid);
     });
+
     socket.on("play", () => {
       console.log("It is your turn");
       setIsMyTurn(true);
     });
-    socket.on("restart", () => {
-      window.location.reload();
+
+    socket.on("restartclicked", () => {
+      // window.location.reload();
+      setBingoStr("");
+      setRowCountArr(Array(5).fill(0));
+      setColCountArr(Array(5).fill(0));
+      setDiag1Count(0);
+      setDiag2Count(0);
+      makeArrayRandom();
+
+      setIsStarted(false);
     });
     socket.on("started", () => {
       setIsStarted(true);
       // getAllPlayers();
+      setLoading(false);
     });
     socket.on("new_player", () => {
       setHaveNewPlayer((val) => val + 1);
@@ -225,6 +229,10 @@ const BingoSquares = () => {
         "----------------lost ------\n" + winnerData + " won\n----------------"
       );
       if (winner == null) setWinner(winnerData);
+    });
+    socket.on("datareset", () => {
+      setIsStarted(true);
+      makeArrayRandom();
     });
   }, []);
   useEffect(() => {
@@ -247,18 +255,22 @@ const BingoSquares = () => {
     }
   }, [haveNewPlayer, isStartEnabled, leftOnePlayer]);
   useEffect(() => {
-    if (numbersArr[0] != 0) {
-      socket.on("playednum", (data) => {
+    function handleFunc(data) {
+      if (numbersArr[0] != 0) {
         console.log("play play");
 
         checkBINGO(data);
-
-        //   checkBINGO(rowCountArr, data);
-      });
+      }
     }
-  }, [isStarted]);
+
+    socket.on("playednum", handleFunc);
+    return () => socket.off("playednum", handleFunc);
+  }, [isStarted, numbersArr]);
   const startGame = () => {
+    setLoading(false);
+    console.log("room is ", room);
     socket.emit("start_game", room);
+
     setIsStarted(true);
   };
   const restartGame = () => {
@@ -277,7 +289,7 @@ const BingoSquares = () => {
   const onClickCustom = () => {
     setCustomOrderIndex(0);
     setNumbersArr(Array(25).fill(0));
-    setOrrderedNumbers(orderedArr);
+    setOrderedNumbers(orderedArr);
     setNumbersOrder("custom");
   };
   const onClickNumberTile = (num) => {
@@ -287,7 +299,7 @@ const BingoSquares = () => {
     setNumbersArr(tempArr);
     let tempArr2 = [...orderedNumbers];
     tempArr2 = tempArr2.filter((ele) => ele != num);
-    setOrrderedNumbers(tempArr2);
+    setOrderedNumbers(tempArr2);
     console.log(numbersArr);
   };
   return (
@@ -348,8 +360,9 @@ const BingoSquares = () => {
                 );
               })}
             </div>
-            <button
-              className="
+            {!isStarted && (
+              <button
+                className="
               bg-orange-500
               text-white
             my-2
@@ -361,14 +374,15 @@ const BingoSquares = () => {
               self-center
               hover:bg-orange-300
               col-span-1"
-              onClick={
-                numbersOrder == "random" ? onClickCustom : makeArrayRandom
-              }
-            >
-              {numbersOrder == "random"
-                ? "Use Custom Numbers"
-                : "Use random Numbers"}
-            </button>
+                onClick={
+                  numbersOrder == "random" ? onClickCustom : makeArrayRandom
+                }
+              >
+                {numbersOrder == "random"
+                  ? "Use Custom Numbers"
+                  : "Use random Numbers"}
+              </button>
+            )}
             <div className="flex flex-row flex-wrap flex-shrink col-span-2 max-w-60">
               {orderedNumbers != null &&
                 numbersOrder == "custom" &&
@@ -464,12 +478,12 @@ const BingoSquares = () => {
         </div>
       )}
       <div className="text-center text-green-600 flex justify-center w-full text-xl my-2">
-        {isBINGOEnabled && (
+        {isBINGOEnabled && !isBINGOClicked && winner == null && (
           <button
             className="bg-orange-500 text-white w-auto h-min p-2 rounded-sm font-kanit font-normal self-center hover:bg-orange-300 col-span-1"
             onClick={() => won(name)}
           >
-            I got BINGO :)
+            I got BINGO
           </button>
         )}
       </div>
