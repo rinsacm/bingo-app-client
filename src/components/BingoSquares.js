@@ -208,6 +208,9 @@ const BingoSquares = () => {
       setDiag1Count(0);
       setDiag2Count(0);
       makeArrayRandom();
+      setIsBINGOClicked(false);
+      setIsBINGOEnabled(false);
+      setWinner(null);
 
       setIsStarted(false);
     });
@@ -244,6 +247,9 @@ const BingoSquares = () => {
   useEffect(() => {
     if (bingoStr == "BINGO") {
       setIsBINGOEnabled(true);
+      console.log(isBINGOClicked);
+      console.log(isBINGOEnabled);
+      console.log(winner);
       // won("rin");
       // setShowModal(true);
     }
