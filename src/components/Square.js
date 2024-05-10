@@ -11,13 +11,15 @@ const Square = ({
   room,
   socketid,
   isStarted,
+  currentClickedNum,
+  setCurrentClickedNum,
 }) => {
   const [isSquareClicked, setIsSquareClicked] = useState(isClicked);
   const [isJoined, setIsClicked] = useState(false);
   const [latestNumbers, setLatestNumbers] = useState(null);
   //   const [isMyTurn, setIsMyTurn] = useState(false);
-
   const socket = useContext(SocketContext);
+  const [sqBgColor, setSqBgColor] = useState("white");
   // useEffect(() => {
   //   console.log(numbersArr);
   // }, [numbersArr]);
@@ -57,6 +59,7 @@ const Square = ({
       num == numbersArr[rowInd * 5 + colInd] &&
       data["socketid"] != socketid
     ) {
+      setCurrentClickedNum(num);
       setIsSquareClicked(true);
       console.log("other player clicked " + num);
     }
@@ -68,19 +71,30 @@ const Square = ({
     if (!isSquareClicked && isMyTurn) {
       setIsClicked(true);
       // console.log(refArr);
+      setCurrentClickedNum(val);
       setIsSquareClicked(true);
       setIsMyTurn(false);
       console.log(val);
       socket.emit("played", val, room, socketid);
     }
   };
+  useEffect(() => {
+    let tempColor = isSquareClicked
+      ? currentClickedNum === numbersArr[rowInd * 5 + colInd]
+        ? "#FF34"
+        : "#FF2400"
+      : "white";
+    setSqBgColor(tempColor);
+  }, [currentClickedNum, isSquareClicked]);
   return (
     <div
       className="w-12 h-12 border-solid border border-black  text-center "
       //   ref={(ele) => (refArr[rowInd][colInd] = ele)}
       key={rowInd * 5 + colInd}
       aria-disabled={!isMyTurn}
-      style={{ backgroundColor: isSquareClicked ? "#FF2400" : "white" }}
+      style={{
+        backgroundColor: sqBgColor,
+      }}
       onClick={() =>
         onClickSquare(numbersArr[rowInd * 5 + colInd], rowInd, colInd)
       }

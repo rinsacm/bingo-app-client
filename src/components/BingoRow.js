@@ -10,6 +10,8 @@ const BingoRow = ({
   room,
   socketid,
   isStarted,
+  currentClickedNum,
+  setCurrentClickedNum,
 }) => {
   let arr = [1, 2, 3, 4, 5];
 
@@ -25,6 +27,8 @@ const BingoRow = ({
         room={room}
         socketid={socketid}
         isStarted={isStarted}
+        currentClickedNum={currentClickedNum}
+        setCurrentClickedNum={setCurrentClickedNum}
       />
     );
   });
