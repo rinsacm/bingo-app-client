@@ -31,6 +31,8 @@ const BingoSquares = () => {
   const [orderedNumbers, setOrderedNumbers] = useState(null);
   const [numbersOrder, setNumbersOrder] = useState("random");
   const [restart, setRestart] = useState(false);
+  const [currentClickedNum, setCurrentClickedNum] = useState(null);
+
   //creating array of numbers from 1 to 25
   let orderedArr = Array(25)
     .fill(0)
@@ -211,6 +213,7 @@ const BingoSquares = () => {
       setIsBINGOClicked(false);
       setIsBINGOEnabled(false);
       setWinner(null);
+      setCurrentClickedNum(null);
 
       setIsStarted(false);
     });
@@ -264,7 +267,7 @@ const BingoSquares = () => {
     function handleFunc(data) {
       if (numbersArr[0] != 0) {
         console.log("play play");
-
+        setCurrentClickedNum(data["num"]);
         checkBINGO(data);
       }
     }
@@ -361,6 +364,8 @@ const BingoSquares = () => {
                       room={room}
                       socketid={socketid}
                       isStarted={isStarted}
+                      currentClickedNum={currentClickedNum}
+                      setCurrentClickedNum={setCurrentClickedNum}
                     />
                   </div>
                 );
