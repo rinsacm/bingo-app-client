@@ -2,8 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import BingoRow from "./BingoRow";
 import "../App.css";
 import { SocketContext } from "../contexts/SocketContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const BingoSquares = () => {
+const BingoSquares = ({
+  isJoinedRoom = false,
+  roomName = "",
+  username = "",
+}) => {
   const [bingoStr, setBingoStr] = useState("");
 
   const [numbersArr, setNumbersArr] = useState(Array(25).fill(0));
@@ -19,8 +24,6 @@ const BingoSquares = () => {
   const [diag1Count, setDiag1Count] = useState(0);
   const [diag2Count, setDiag2Count] = useState(0);
   const [isBINGOEnabled, setIsBINGOEnabled] = useState(false);
-  const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
   const [isStartEnabled, setIsStartEnabled] = useState(false);
   const [socketid, setSocketid] = useState(null);
   const [winner, setWinner] = useState(null);
@@ -32,6 +35,11 @@ const BingoSquares = () => {
   const [numbersOrder, setNumbersOrder] = useState("random");
   const [restart, setRestart] = useState(false);
   const [currentClickedNum, setCurrentClickedNum] = useState(null);
+  let navigate = useNavigate();
+  const location = useLocation();
+
+  const [name, setName] = useState(location.state.username);
+  const [room, setRoom] = useState(location.state.roomName);
 
   //creating array of numbers from 1 to 25
   let orderedArr = Array(25)
@@ -185,6 +193,7 @@ const BingoSquares = () => {
     setIsBINGOClicked(true);
   };
   useEffect(() => {
+    console.log(location.state);
     setLoading(true);
 
     console.log("numbersArr initially = " + numbersArr);
@@ -435,7 +444,7 @@ const BingoSquares = () => {
         </div>
       )}
 
-      <div
+      {/* <div
         className="text-center text-black-600 flex justify-center w-screen text-lg my-2"
         mx-2
       >
@@ -480,6 +489,26 @@ const BingoSquares = () => {
               Join room
             </button>
           )}
+        </div>
+      </div> */}
+      <div
+        className="text-center text-black-600 flex justify-center w-screen text-lg my-2"
+        mx-2
+      >
+        <div>
+          <div className="grid grid-cols-3 grid-rows-2 gap-2">
+            <label className="col-span-1">Name: </label>
+
+            <div className="col-span-2 text-base">
+              {location.state.username}
+            </div>
+
+            <label className="col-span-1 text-base">Room:</label>
+
+            <div className="col-span-2 text-base">
+              {location.state.roomName}
+            </div>
+          </div>
         </div>
       </div>
 
