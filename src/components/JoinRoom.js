@@ -69,7 +69,7 @@ const JoinRoom = ({ isJoinedRoom, setIsJoinedRoom }) => {
           Join room
         </button>
       </div>
-      <div className="max-w-80 text-gray-900">
+      <div className="max-w-80 text-gray-900 justify-center flex">
         You can join a room by typing your username and a room names
       </div>
     </div>
